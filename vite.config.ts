@@ -3,7 +3,7 @@ import vitePluginImp from 'vite-plugin-imp'
 import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({command}) => ({
   plugins: [
     //react 插件，使用改插件以后不用每个tsx文件都引入react了，且具备了热更新
     react(),
@@ -39,9 +39,9 @@ export default defineConfig({
      * 2.console会存在泄露敏感数据的风险
      * 3.会导致内存泄露
      */
-    drop: ['console', 'debugger']
+    drop: command === 'build' ? ['console', 'debugger'] : []
   },
   server: {
     port: 3033
   }
-})
+}))
