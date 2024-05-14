@@ -53,6 +53,9 @@ class People {
   }
 }
 
+/**
+ * 生成一个只能生成单例的构造函数
+ */
 const singlePeople = createSingleton(People);
 
 const p1 = new singlePeople('Alice', 20, Sex.Female);

@@ -95,3 +95,48 @@ export type Optional<T extends Object, K extends RequiredKeys<T>> = Omit<T, K> &
  * 将对象的指定属性改为必选
  */
 export type DesignatedRequired<T extends Object, K extends OptionalKeys<T>> = Omit<T, K> & Required<Pick<T, K>>
+
+/**
+ * 定义一个元组类型，用于表示函数的参数类型
+ */
+export type OwnTuple = unknown [] | readonly unknown []
+
+/**
+ * 定义一个获取元组长度的类型工具
+ */
+export type Length<T extends OwnTuple> = T['length'];
+
+/**
+ * 获取元组类型的第一个元素类型
+ */
+export type First<T extends OwnTuple> = T extends [infer A, ...infer B] ? A : never;
+
+/**
+ * 获取元组类型的最后一个元素类型
+ */
+export type Last<T extends OwnTuple> = T extends [...infer A, infer B] ? B : never;
+
+/**
+ * 判断第一个元组是不是第二个元组的子元组
+ * 判断逻辑如下：
+ * 1.元组1extends元组2，则元组1是元组2的子元组
+ * 2.元组1的每个元素extends元组2相同位置的元素，则元组1是元组2的子元组
+ * 3.T1是空元组，T2是任意元组，则T1是T2的子元组
+ * 根据上述条件，完成以下逻辑：
+ * 1.T1 extends T2，则T1是T2的子元组（这类情况包含了T1和T2都是空元组的情况）
+ * 2.反之判断T2元组的长度，由于T1 extends T2 是false,则表示T1 T2不可能同时为空元组，此时如果T2的长度为0，则T1不是T2的子元组
+ * 3.判断T1元组的长度，如果T1的长度为0，则T1是T2的子元组
+ * 4.利用类型推导取出T1的第一项以及剩余项，三目运算符的第二项表述无法进行元组推导，表示T1不是元组，所有用false表示T1不是T2的子元组
+ * 5.利用类型推导取出T2的第一项以及剩余项，三目运算符的第二项表述无法进行元组推导，表示T2不是元组，所有用false表示T1不是T2的子元组
+ * 6.判断T1的第一项和T2的第一项是否相等，如果相等，则利用递归调用TupleExtends<T1的剩余项, T2的剩余项>，进行递归判断，不相等则得到了判断结果，T1不是T2的子元组
+ */
+export type TupleExtends<T1 extends OwnTuple, T2 extends OwnTuple> = T1 extends T2 ? true : 
+Length<T2> extends 0 ? false :
+Length<T1> extends 0 ? true :
+T1 extends [infer F1, ...infer R1] ? 
+T2 extends [infer F2, ...infer R2] ? 
+F1 extends F2 ? 
+TupleExtends<R1, R2>
+: false 
+: false 
+: false
