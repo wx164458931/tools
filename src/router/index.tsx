@@ -1,58 +1,123 @@
-import { createBrowserRouter, RouteObject } from 'react-router-dom'
-// import { Children, lazy } from 'react'
-// import { getRouteUsefullPath, findRouteByPath } from './util.ts'
+import { createBrowserRouter, RouteObject, useNavigate } from 'react-router-dom'
+import { getRouteUsefullPath } from './util.ts'
 import Layout from '../layout'
+import Login from '../pages/login/index.tsx'
+import Error from '../pages/error/index.tsx'
+import type { DesignatedRequired } from '../common/tsTools/common.ts'
+import { useState, useEffect } from 'react'
+import { selectMenus } from '../store/userinfo/index.ts'
+import { useAppSelector } from '../store'
+import { cloneDeep } from 'lodash'
+import { IMenuItem } from '../api/common/types.ts'
+import { IRouteConfig } from './types.ts'
 
-// const dynamicRoute:RouteObject =  {
-//   path: '/',
-//   element: <Layout/>,
-//   children: []
-// };
+const routeComponents = import.meta.glob(['../pages/**/index.tsx', '!../pages/**/components/**/index.tsx', '../pages/**/common/**/index.tsx'])
+const routeConfigs = import.meta.glob(['../pages/**/page.ts', '!../pages/**/components/**/page.ts', '../pages/**/common/**/page.ts'], {
+  eager: true,
+  import: 'default'
+})
 
-// let routeConfigs = import.meta.glob('../pages/**/route_config.ts', {
-//   eager: true,
-//   import: 'default'
-// })
-
-// const dynamicRoute = Object.entries(routeConfigs).reduce((res, [path, cmp]) => {
-//   const { routeInfo, componentPath } = getRouteUsefullPath(path);
-//   const { level, parentPath, path: routePath } = routeInfo
-//   const Component = lazy(() => import(componentPath));
-
-//   if(level === 1) {
-//     res.push({
-//       path: routePath,
-//       element: <Component/>,
-//     })
-//   }
-//   else if(parentPath) {
-//     const parent = findRouteByPath(parentPath, res);
-
-//     if(parent) {
-//       if(parent.children && parent.children.length) {
-//         parent.children.push({
-//           path: routePath,
-//           element: <Component/>,
-//         })
-//       }
-//       else{
-//         parent.children = [{
-//           path: routePath,
-//           element: <Component/>,
-//         }]
-//       }
-//     }
-//   }
-//   return res;
-// }, [] as RouteObject[])
-
-// console.log('dynamicRoute', dynamicRoute);
-
-const router = createBrowserRouter([
+const baseRoutes = [
   {
-    path: '/',
-    element: <Layout/>,
-  },
-])
+    path: '/login',
+    element: <Login/>,
+  }
+]
 
-export default router
+const baseDynamicRoute = {
+  path: '/*',
+  element: <Layout/>,
+  errorElement: <Error/>,
+  children: [] as RouteObject[]
+}
+
+// const dynamicRoutes = Object.entries(routeComponents).reduce((res, [path, cmp], idx) => {
+//   const { routeInfo } = getRouteUsefullPath(path);
+//   const { path: routePath } = routeInfo
+//   let configPath = path.split('/').filter(Boolean);
+//   configPath.pop();
+//   console.log('path', path);
+//   console.log('config', routeConfigs[configPath.join('/') + '/page.ts'])
+//   const lazy = async () => {
+//     const { default: Index} = await (cmp() as Promise<{
+//       default: any;
+//     }>);
+//     return { Component: Index };
+//   }
+
+//   res[0].children.push({
+//     path: routePath,
+//     lazy
+//   })
+
+//   return res;
+// }, [
+//   cloneDeep(baseDynamicRoute)
+// ] as DesignatedRequired<RouteObject, 'children'>[])
+
+
+const createDynamicRoutes = (menus: IMenuItem[]) => {
+  const dynamicRootRoute = cloneDeep(baseDynamicRoute);
+  const childrenStack: {
+    cmenus: IMenuItem[], parentPath: string
+  } [] = [
+    {
+      cmenus: menus,
+      parentPath: ''
+    }
+  ]
+  
+  while(childrenStack.length) {
+    const { cmenus, parentPath } = childrenStack.pop() as { cmenus: IMenuItem[], parentPath: string };
+    cmenus.forEach(item => {
+      const path = (parentPath + item.path).split('/').filter(Boolean).join('/');
+  
+      if(item.component) {
+        const componentPath = `../pages${item.component}/index.tsx`;
+        const configPath = `../pages${item.component}/page.ts`;
+        const config = routeConfigs[configPath] as IRouteConfig;
+        if(!config || !config.ignore) {
+          const cmp  = routeComponents[config?.getComponentPath ? config?.getComponentPath(componentPath) : componentPath];
+          dynamicRootRoute.children.push({
+            path: path,
+            lazy: async () => {
+              const { default: Index} = await (cmp() as Promise<{
+                default: any;
+              }>);
+              return { Component: Index };
+            }
+          })
+        }
+      }
+  
+      if(item.children && item.children.length) {
+        childrenStack.push({
+          cmenus: item.children,
+          parentPath: path
+        })
+      }
+    })
+  }
+
+  return dynamicRootRoute;
+}
+
+const useDynamicRoutes = () => {
+  const menus = useAppSelector(selectMenus);
+  const [routes, setRoutes] = useState(createBrowserRouter([...baseRoutes, baseDynamicRoute]))
+
+  useEffect(() => {
+    if(!menus.length) {
+      return;
+    }
+    setRoutes(createBrowserRouter([
+      ...baseRoutes,
+      createDynamicRoutes(menus),
+    ]))
+    // console.log('createDynamicRoutes', createDynamicRoutes(menus));
+  }, [menus])
+
+  return routes
+}
+
+export default useDynamicRoutes

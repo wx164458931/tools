@@ -34,36 +34,36 @@ export function createSingleton<T extends Object>(constructor: Constructor<T>): 
 }
 
 //示例：可将以下代码放入合适的地方查看效果
-enum Sex {
-  Male = 'male',
-  Female = 'female'
-}
+// enum Sex {
+//   Male = 'male',
+//   Female = 'female'
+// }
 
 /**
  * 这是准备用来用作单例的构造函数
  */
-class People {
-  name: string
-  age: number
-  sex: Sex
-  constructor(name: string, age: number, sex: Sex) {
-    this.name = name;
-    this.age = age;
-    this.sex = sex;
-  }
-}
+// class People {
+//   name: string
+//   age: number
+//   sex: Sex
+//   constructor(name: string, age: number, sex: Sex) {
+//     this.name = name;
+//     this.age = age;
+//     this.sex = sex;
+//   }
+// }
 
 /**
  * 生成一个只能生成单例的构造函数
  */
-const singlePeople = createSingleton(People);
+// const singlePeople = createSingleton(People);
 
-const p1 = new singlePeople('Alice', 20, Sex.Female);
-const p2 = new singlePeople('Bob', 25, Sex.Male);
-const p3 = new singlePeople.prototype.constructor('Charlie', 30, Sex.Male)
-console.log(p1.name); //输出Alice
-console.log(p2.name); //输出Alice
-console.log(p3.name); //输出Alice
+// const p1 = new singlePeople('Alice', 20, Sex.Female);
+// const p2 = new singlePeople('Bob', 25, Sex.Male);
+// const p3 = new singlePeople.prototype.constructor('Charlie', 30, Sex.Male)
+// console.log(p1.name); //输出Alice
+// console.log(p2.name); //输出Alice
+// console.log(p3.name); //输出Alice
 
-console.log(p1 === p2); // 输出 true
-console.log(p1 === p3); //输出true
+// console.log(p1 === p2); // 输出 true
+// console.log(p1 === p3); //输出true

@@ -10,7 +10,7 @@ export function getRouteUsefullPath(path: string): RouteConfigPathInfo {
     arr.shift();
     arr.shift();
     const res = {
-      path: `/${arr.join('/')}`,
+      path: `${arr.join('/')}`,
       level: arr.length
     }
 

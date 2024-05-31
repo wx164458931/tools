@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig }from 'axios'
-
+import EventEmitter from './eventEmitter'
+import CustomizerEvent from './customizerEvent'
 /**
  * 写在前面，一种不算优雅的axios封装方案
  * 主要是想解决axios的类型指定。
@@ -53,6 +54,7 @@ declare module 'axios' {
 
 const baseUrl = '';
 const timeout = 600000;
+const NO_LOGIN_CODE = 401;
 
 const service = axios.create({
   baseURL: baseUrl, // api 的 base_url
@@ -79,7 +81,14 @@ service.interceptors.response.use(
      * 注意一定要把response.data返回。因为response是axios封装的，response.data才是后台返回的数据
      */
     const res = response.data;
-    return res;
+    const { code, msg } = res;
+
+    if (code === NO_LOGIN_CODE) {
+      EventEmitter.emit(CustomizerEvent.UNLOGIN);
+      return Promise.reject(res);
+    } else {
+      return res;
+    }
   },
   (error) => {
     return Promise.reject(error);

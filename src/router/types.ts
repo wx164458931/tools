@@ -1,11 +1,6 @@
-export declare interface IRouteConfig {
-  path?: string
-  meta?: {
-    title?: string
-    icon?: string
-    [key: string]: any
-  };
-  [key: string]: any;
+export interface IRouteConfig {
+  getComponentPath?: (path: string) => string
+  ignore?: boolean
 }
 
 export type RouteInfo = {

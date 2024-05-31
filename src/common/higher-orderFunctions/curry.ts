@@ -1,4 +1,4 @@
-import type { OwnTuple, Length, First, TupleExtends } from '../tsTools/common'
+import type { OwnTuple, Length, First } from '../tsTools/common'
 
 /**
  * 类型体操中柯里化的一种类型实现方案
@@ -25,16 +25,16 @@ never
  */
 export declare function curry<A extends OwnTuple, R>(fn: (...args: A) => R): CurryMethod<A, R>
 
-const sum = (a: number, b: string, c: number) => {
-  return a + b + c
-}
+// const sum = (a: number, b: string, c: number) => {
+//   return a + b + c
+// }
 
 /**
  * 此处利用IDE的代码提示，可以看到_currid的提示信息如下
  * const _currid: (a: number) => (a: string) => (a: number) => string
  * 表明该类型标注能够很好的为柯里化函数服务
  */
-const _currid = curry(sum)
+// const _currid = curry(sum)
 
 /**
  * 存在的问题
@@ -87,11 +87,11 @@ const _currid = curry(sum)
 //   return _curry
 // }
 
-const getParams = (a: string, b:number, c: boolean) => {
-  return [a, b, c];
-}
+// const getParams = (a: string, b:number, c: boolean) => {
+//   return [a, b, c];
+// }
 
-const _paramsCurrid = curry(getParams)
+// const _paramsCurrid = curry(getParams)
 
 /**
  * 以上两种方案都是使用js的简易实现，没有使用TS的特性，所以无法实现类型标注；
