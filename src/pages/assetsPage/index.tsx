@@ -2,9 +2,9 @@ import React from "react";
 
 const AssetsPage: React.FC = () => {
   return (
-    <div>
-      <h1>assets</h1>
-      <p>This is the content of assets</p>
+    <div className="article">
+      <h1>说明</h1>
+      <p>静态资源文件夹</p>
     </div>
   );
 }

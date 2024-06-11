@@ -27,11 +27,18 @@ export default defineConfig(({command}) => ({
   css: {
     preprocessorOptions: {
       scss: {//设置项目引入的自定义变量
-        additionalData: `@import "@/styles/variables.scss";`
+        additionalData: (_:string, path: string) => {
+          const flag = new RegExp('^.*src/styles/variables\.scss$').test(path);
+          if(!flag) {
+            return `@use '@/styles/variables.scss' as *;${_}`
+          }
+          return _;
+        }
       },
     }
   },
-  esbuild: {//打包时去掉console和debugger
+  esbuild: {
+    //打包时去掉console和debugger
     /**
      * 特别说明，这个配置很重要。我们很多人代码规范做的不够，代码review没有，导致会把console和debugger写入到代码中，打包部署到生产环境
      * 这样做有以下几点风险：

@@ -99,6 +99,12 @@ const createDynamicRoutes = (menus: IMenuItem[]) => {
     })
   }
 
+  dynamicRootRoute.children.push({
+    path: '*',
+    element: <Error/>,
+    children: [] as RouteObject[]
+  })
+
   return dynamicRootRoute;
 }
 

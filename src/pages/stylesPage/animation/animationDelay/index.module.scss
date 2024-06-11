@@ -1,0 +1,96 @@
+.center-wrapper {
+  display: flex;
+  // flex-direction: column;
+  justify-content: center;
+  overflow: auto;
+  width: 100%;
+}
+.animation-delay-wrapper {
+  width: 800px;
+  height: auto;
+  // overflow-x: auto;
+  --duration: 1s;
+  --delay: 0s;
+  .face {
+    --startBackgroundColor: red;
+    --endBackgroundColor: green;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 40px auto;
+    background-color: var(--startBackgroundColor);
+    border-radius: 100%;
+    position: relative;
+    animation: a-background var(--duration) linear var(--delay) forwards paused;
+    .face-eye {
+      width: 18px;
+      height: 18px;
+      background-color: #fff;
+      border-radius: 100%;
+      position: absolute;
+      top: 22px;
+    }
+    .face-eye-left {
+      left: 14px;
+      animation: eye-left-change var(--duration) linear var(--delay) forwards paused;
+    }
+    .face-eye-right {
+      right: 14px;
+      animation: eye-right-change var(--duration) linear var(--delay) forwards paused;
+    }
+    .face-mouth {
+      width: 24px;
+      height: 4px;
+      border-radius: 100%;
+      background: #fff;
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateY(-12px) translateX(-50%);
+      box-shadow: inset 0 4px 0 #fff;
+      animation: mouth-change var(--duration) linear var(--delay) forwards paused;
+    }
+  }
+
+  .animation-delay-des {
+    width: 800px;
+    text-align: left;
+    margin-top: 32px;
+  }
+
+  @keyframes a-background {
+    to {
+      background: var(--endBackgroundColor);
+    }
+  }
+
+  @keyframes eye-left-change {
+    0% {
+      clip-path: polygon(0 70%, 100% 0, 100% 100%, 0 100%);
+    }
+    to {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+    }
+  }
+
+  @keyframes eye-right-change {
+    0%{
+      clip-path: polygon(0 0, 100% 70%, 100% 100%, 0% 100%);
+    }
+    to {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+    }
+  }
+
+  @keyframes mouth-change {
+    0% {
+      height: 4px;
+      transform: translateY(-12px) translateX(-50%);
+      clip-path: inset(50% 0% 0% 0%);
+    }
+    to {
+      height: 24px;
+      transform: translateY(0) translateX(-50%);
+      clip-path: inset(50% 0% 0% 0%);
+    }
+  }
+}

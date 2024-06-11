@@ -1,0 +1,25 @@
+::-webkit-scrollbar {
+  position: relative;
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  border: calc(var(--scrollbarSize, 4) * 1px) solid transparent;
+  border-radius: calc(var(--scrollbarSize, 4) * 3px);
+  background-color: rgba(200, 200, 200, 0.6);
+}
+
+.article {
+  flex: 1;
+  text-align: left;
+  overflow: auto;
+}
+
+.center-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}

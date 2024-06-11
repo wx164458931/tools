@@ -1,11 +1,11 @@
 import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Breadcrumb, Layout, Menu, Spin } from 'antd';
-import { createElement, useEffect, useState } from 'react';
+import { createElement, useEffect, useMemo, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import EventEmitter from '../common/eventEmitter'
 import CustomizerEvent from '../common/customizerEvent'
-import { selectUserStatus, login, LoginStatus, selectSiders } from '../store/userinfo'
+import { selectUserStatus, login, LoginStatus, selectSiders, selectMenus } from '../store/userinfo'
 import { useAppSelector, useAppDispatch } from '../store'
 import styles from './index.module.scss'
 import useDynamicRoutes from '../router';
@@ -18,6 +18,7 @@ const App: React.FC = () => {
   const routers = useDynamicRoutes()
   const { pathname } = useLocation();
   const siders = useAppSelector(selectSiders);
+  const menus = useAppSelector(selectMenus);
   const logingStatus = useAppSelector(selectUserStatus);
   const [activeHeaderKey, setHeaderKey] = useState('')
   const [activeSiderKey, setSiderKey] = useState('')
@@ -77,6 +78,28 @@ const App: React.FC = () => {
       setSiderMenus((siderMenu as MenuProps['items']) || [])
     }
   }, [siders, activeHeaderKey])
+
+  const breadcrumbs = useMemo(() => {
+    const pathArr = pathname.split('/').filter(Boolean);
+    const items:string[] = [];
+    let _ms = [...menus];
+    pathArr.forEach((el, index) => {
+      const m = _ms.find(item => item.path === "/" + el)
+
+      if(m) {
+        items.push(m.name);
+        if(m.children && m.children.length > 0) {
+          _ms = m.children;
+        }
+      }
+    })
+
+    return items.map(el => {
+      return {
+        title: el
+      }
+    })
+  }, [pathname, menus])
 
   const clearUserInfo = () => {
     navigate('/login')
@@ -156,13 +179,10 @@ const App: React.FC = () => {
             )
           }
           <Layout style={{ padding: '0 24px 24px' }}>
-            <Breadcrumb style={{ margin: '16px 0' }}>
-              <Breadcrumb.Item>Home</Breadcrumb.Item>
-              <Breadcrumb.Item>List</Breadcrumb.Item>
-              <Breadcrumb.Item>App</Breadcrumb.Item>
+            <Breadcrumb style={{ margin: '16px 0' }} items={breadcrumbs}>
             </Breadcrumb>
             <Content
-              className={styles['site-layout-background']}
+              className={`${styles['content-layout']}`}
               style={{
                 padding: 24,
                 margin: 0,

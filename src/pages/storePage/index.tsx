@@ -2,9 +2,9 @@ import React from "react";
 
 const StorePage: React.FC = () => {
   return (
-    <div>
-      <h1>store</h1>
-      <p>This is the content of store</p>
+    <div className="article">
+      <h1>说明</h1>
+      <p>采用redux进行的全局状态管理</p>
     </div>
   );
 }

@@ -1,0 +1,8 @@
+// @import './theme.scss';
+// @import './common.scss';
+$white: var(--white);
+
+:root {
+  --white: #fff;
+  --scrollbarSize: 4;
+}
