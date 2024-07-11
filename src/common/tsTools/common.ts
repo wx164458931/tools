@@ -89,12 +89,12 @@ export type RequiredKeys<T> = { [K in keyof T]: IsRequired<T, K> }[keyof T]
  *  函数实现
  * }
  */
-export type Optional<T extends Object, K extends RequiredKeys<T>> = Omit<T, K> & Partial<Pick<T, K>>
+export type Optional<T extends object, K extends RequiredKeys<T>> = Omit<T, K> & Partial<Pick<T, K>>
 
 /**
  * 将对象的指定属性改为必选
  */
-export type DesignatedRequired<T extends Object, K extends OptionalKeys<T>> = Omit<T, K> & Required<Pick<T, K>>
+export type DesignatedRequired<T extends object, K extends OptionalKeys<T>> = Omit<T, K> & Required<Pick<T, K>>
 
 /**
  * 定义一个元组类型，用于表示函数的参数类型
@@ -109,12 +109,14 @@ export type Length<T extends OwnTuple> = T['length'];
 /**
  * 获取元组类型的第一个元素类型
  */
-export type First<T extends OwnTuple> = T extends [infer A, ...infer B] ? A : never;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export type First<T extends OwnTuple> = T extends [infer A, ...infer _B] ? A : never;
 
 /**
  * 获取元组类型的最后一个元素类型
  */
-export type Last<T extends OwnTuple> = T extends [...infer A, infer B] ? B : never;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export type Last<T extends OwnTuple> = T extends [...infer _A, infer B] ? B : never;
 
 /**
  * 判断第一个元组是不是第二个元组的子元组
@@ -140,3 +142,8 @@ TupleExtends<R1, R2>
 : false 
 : false 
 : false
+
+/**
+ * 获取promise的返回值类型
+ */
+export type GetPromiseType<T> = T extends Promise<infer U> ? GetPromiseType<U> : T;

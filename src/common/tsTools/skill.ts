@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * 技巧1:
  * 这是一个示例的
@@ -15,11 +16,11 @@
  * 这样我们我们的Watcher类型就定义好了,这个类型定义可以充分利用TS的类型推导，让watch方法在使用的时候避免很多错误，以及带来优秀的代码提示。
  * 可参考示例
  */
-type Watcher<T extends Object> = {
+type Watcher<T extends object> = {
   on<K extends keyof T & (string | number)>(event: `${K}Changed`, callback: (oldValue:T[K], newValue:T[K]) => void): void
 }
 
-export declare function watch<T extends Object>(obj:T): Watcher<T>
+export declare function watch<T extends object>(obj:T): Watcher<T>
 
 //示例
 enum Sex {
@@ -91,22 +92,23 @@ function saleProduct(type: ProductType) {
       console.log('卖游戏')
       break
     default:
+      // eslint-disable-next-line no-case-declarations
       const n:never = type;
       break
   }
 
   //使用if来判断所有可能
   if(type === ProductType.Book) {
-
+    // do something
   }
   else if(type === ProductType.Movie) {
-
+    // do something
   }
   else if(type === ProductType.Music) {
-    
+    // do something
   }
   else if(type === ProductType.Game) {
-    
+    // do something
   }
   else {
     const n:never = type;

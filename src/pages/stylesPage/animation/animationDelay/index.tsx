@@ -2,9 +2,11 @@ import React, { useMemo, useState } from "react";
 import { Slider } from 'antd';
 import styles from './index.module.scss';
 
+
+
 const AnimationDelay: React.FC = () => {
   const [sliderValue, setSliderValue] = useState(0)
-  const [duration, setDuration] = useState(1);
+  const [duration] = useState(1);
   
   const style = useMemo(() => {
     return {

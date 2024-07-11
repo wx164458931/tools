@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * 这是一个获取单例构造函数的工具函数。
  */
@@ -16,7 +17,7 @@ type Constructor<T> = new (...args: any[]) => T;
  * @param constructor 
  * @returns 
  */
-export function createSingleton<T extends Object>(constructor: Constructor<T>): Constructor<T> {
+export function createSingleton<T extends object>(constructor: Constructor<T>): Constructor<T> {
   let instance: T | null = null;
 
   const proxy = new Proxy<Constructor<T>>(constructor, {

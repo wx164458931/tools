@@ -68,6 +68,23 @@ const base64ToString = (() => {
 })()
 
 /**
+ * 获取环境信息作为生成hash的一部分特征
+ */
+const hash_base = (() => {
+  if(Object.prototype.hasOwnProperty.call(globalThis, 'navigator')) {
+    return navigator.userAgent;
+  }
+  //@ts-ignore
+  else if(process) {
+    //@ts-ignore
+    return `${process.version} ${process.platform} ${process.arch}`
+  }
+  else {
+    return '';
+  }
+})()
+
+/**
  * 存储的数据结构
  */
 export type StoreValue = {
@@ -101,6 +118,7 @@ interface IStorage {
 export type StoreConfig = {
   /**
    * 可以接受一个数字，单位毫秒
+   * 当传入0时表示关闭有效期校验
    * 也可接受一个回调，传入当前获取的数据，返回一个布尔值用于判断是否过期
    * 不设置表示不启用有效期,只要获取到的数据均表示有效
    * 获取超期数据会返回空字符串
@@ -130,8 +148,58 @@ export type StoreConfig = {
 /**
  * 定义存储对象的接口，目前继承与localStorage和sessionStorage
  * 如果有其他的存储对象，例如indexDB等，实现该接口即可使用
+ * 复制浏览器环境的Storage, 不直接extends Storege, 避免特殊环境不存在改类型定义
+ * This Web Storage API interface provides access to a particular domain's session or local storage. It allows, for example, the addition, modification, or deletion of stored data items.
+ *
+ * [MDN Reference](https://developer.mozilla.org/docs/Web/API/Storage)
  */
-export interface IStorageStore extends Storage {}
+export interface IStorageStore {
+  /**
+   * Returns the number of key/value pairs.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/Storage/length)
+   */
+  readonly length: number;
+  /**
+   * Removes all key/value pairs, if there are any.
+   *
+   * Dispatches a storage event on Window objects holding an equivalent Storage object.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/Storage/clear)
+   */
+  clear(): void;
+  /**
+   * Returns the current value associated with the given key, or null if the given key does not exist.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/Storage/getItem)
+   */
+  getItem(key: string): string | null;
+  /**
+   * Returns the name of the nth key, or null if n is greater than or equal to the number of key/value pairs.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/Storage/key)
+   */
+  key(index: number): string | null;
+  /**
+   * Removes the key/value pair with the given key, if a key/value pair with the given key exists.
+   *
+   * Dispatches a storage event on Window objects holding an equivalent Storage object.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/Storage/removeItem)
+   */
+  removeItem(key: string): void;
+  /**
+   * Sets the value of the pair identified by key to value, creating a new key/value pair if none existed for key previously.
+   *
+   * Throws a "QuotaExceededError" DOMException exception if the new value couldn't be set. (Setting could fail if, e.g., the user has disabled storage for the site, or if the quota has been exceeded.)
+   *
+   * Dispatches a storage event on Window objects holding an equivalent Storage object.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/Storage/setItem)
+   */
+  setItem(key: string, value: string): void;
+  [name: string]: any;
+}
 
 /**
  * 获取MD5加密hash
@@ -141,7 +209,7 @@ export interface IStorageStore extends Storage {}
  */
 const getHash = (val: StoreValue) => {
   const { value, date } = val;
-  const valStr = JSON.stringify(value) + date + '';
+  const valStr = JSON.stringify(value) + date + hash_base + '';
   return md5(valStr);
 }
 
@@ -202,6 +270,19 @@ const defaultValidate = (val: string) => {
 }
 
 /**
+ * 验证存储数据是否过期
+ * @param val 
+ * @param expiration 
+ * @returns 
+ */
+const isExpirationUseful = (val: StoreValue, expiration: number) => {
+  const { date } = val;
+  const now = Date.now();
+
+  return +date + expiration >= now;
+}
+
+/**
  * 默认配置
  */
 const defaultConfig:StoreConfig = {
@@ -216,26 +297,20 @@ const defaultConfig:StoreConfig = {
 }
 
 /**
- * 验证存储数据是否过期
- * @param val 
- * @param expiration 
- * @returns 
- */
-const isExpirationUseful = (val: StoreValue, expiration: number) => {
-  const { date } = val;
-  const now = Date.now();
-
-  return +date + expiration >= now;
-}
-
-/**
  * 使用该方式创建一个存储对象
  * 使用这种方法的好处是解耦存储对象使用和实际存储对象，方便以后扩展切换
  * 例如传入localStorage，那么实际存储对象就是localStorage
  * 但是当需要切换成sessionStorage时，只需要传入sessionStorage即可
- * 这样就不用修改代码，只需要修改配置即可
- * @param store 
- * @returns 
+ * 举个例子说明采用这种封装方式的优势，假设业务代码可能已经大范围使用了localStorage,但是某个版本变动时需要把localStorage切换成indexDB
+ * 如果不采取这样的方式封装，indexDB和localStorage使用方法差距巨大无比，然后由于业务代码中大范围使用，可能涉及大范围改动，并带来大量的回归测试工作量。
+ * 但是采用这样的封装，由于使用的是创建的store，并不是直接的localStorage，并且封装内部也没有和localStorage强关联
+ * 此时，只需要增加一个文件，文件内对indexDB进行封装，提供一个实现IStorageStore接口的store对象，
+ * 然后修改调用此方法的地方，将store传入即可，所有的业务代码均不涉及修改
+ * 可以实现底层存储资源变动对业务代码隔离
+ * 后续测试也只需针对indexDB封装出来的store对象做测试即可，无需大范围回归测试
+ * @param store 一个实现了IStorageStore接口的对象
+ * @param config 创建store的配置
+ * @returns 一个IStorage类型的对象
  */
 export default function createStorage(store: IStorageStore, config?: StoreConfig): IStorage {
   const s = store || null;
@@ -268,14 +343,14 @@ export default function createStorage(store: IStorageStore, config?: StoreConfig
          * 从sorage中取出值
          */
         const val = s.getItem(key);
-        let res: StoreValue | null = null;
+        let res: StoreValue | undefined = void 0;
 
         if(!val) {
-          return void 0;
+          return void 0;// 值不存在，直接返回undefined
         }
 
         /**
-         * 如果开始默认加密
+         * 如果开启默认加密，必须使用默认解密方法解密
          */
         if(selfConfig.encrypt === true) {
           /**
@@ -292,21 +367,28 @@ export default function createStorage(store: IStorageStore, config?: StoreConfig
               return stringToStoreValue(val);
             }
             else {
+              console.warn('数据检验失败，数据被篡改!');
               s.removeItem(key);
-              return null;
+              return void 0;
             }
           }
 
-          res = decrypt(val as string);
+          try {
+            res = decrypt(val as string);
+          }
+          catch(err) {
+            console.warn('数据解密失败！', err);
+            throw new Error('default decrypt fialed!')
+          }
         }
         /**
          * 如果启用了加密，且是自定义的加密方法
          */
-        else if(selfConfig.encrypt && typeof selfConfig.encrypt === 'function') {
+        else if(isFunction(selfConfig.encrypt)) {
           /**
            * 判断是否存在解密方法，存在解密方法,调用解密方法，获取值
            */
-          if(selfConfig.decrypt && typeof selfConfig.decrypt === 'function') {
+          if(isFunction(selfConfig.decrypt)) {
             try {
               res = selfConfig.decrypt(val as string)
             }
@@ -337,7 +419,7 @@ export default function createStorage(store: IStorageStore, config?: StoreConfig
           /**
            * 如果有效期是一个回调
            */
-          if(typeof selfConfig.expiration === 'function') {
+          if(isFunction(selfConfig.expiration)) {
             /**
              * 调用回调，传入获取的值，得到是否过期的标志
              */
@@ -358,7 +440,7 @@ export default function createStorage(store: IStorageStore, config?: StoreConfig
 
           /**
            * 数据无效的话
-           * 情况数据
+           * 清空数据
            * 返回undefined
            */
           if(!flag) {
@@ -402,7 +484,7 @@ export default function createStorage(store: IStorageStore, config?: StoreConfig
            */
           let encryptFun: (v:StoreValue) => string;
 
-          if(typeof selfConfig.encrypt !== 'function') {
+          if(!isFunction(selfConfig.encrypt)) {
             encryptFun = defaultEncrypt;
           }
           else {
@@ -467,5 +549,5 @@ export default function createStorage(store: IStorageStore, config?: StoreConfig
  * 
  * const userinfo = store.get('userinfo');
  * 
- * 后续可以优化createStorage方法，加入一步的get和set的异步方法，但是加入异步的话得考虑has、delete、clear等方法。得确保这些方法能够得到有效执行
+ * 后续可以优化createStorage方法，加入异步的get和set的异步方法，但是加入异步的话得考虑has、delete、clear等方法。得确保这些方法能够得到正确有效执行
  */

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosRequestConfig }from 'axios'
 import EventEmitter from './eventEmitter'
 import CustomizerEvent from './customizerEvent'
@@ -31,7 +32,7 @@ export interface RequestMethod {
 }
 
 /**
- * 重新定义axios中饿AxiosInstance的返回类型
+ * 重新定义axios中的AxiosInstance的返回类型
  * 一样要配合response的interceptors中，只将response的data返回，才能满足我们的需求。
  * 和方案一相比不需要使用as进行断言。
  * 但是一样的，都修改了AxiosInstance,可能因此带来其他的问题。但是我目前还没有遇到，遇到以后再来优化
@@ -77,11 +78,11 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     /**
-     * 对响应租出处理
+     * 对响应做出处理
      * 注意一定要把response.data返回。因为response是axios封装的，response.data才是后台返回的数据
      */
     const res = response.data;
-    const { code, msg } = res;
+    const { code } = res;
 
     if (code === NO_LOGIN_CODE) {
       EventEmitter.emit(CustomizerEvent.UNLOGIN);
@@ -95,6 +96,6 @@ service.interceptors.response.use(
   }
 );
 
-// export default service as unknown as RequestMethod //对应方案1
+// export default service as any as RequestMethod // 对应方案1
 
-export default service //对应方案二
+export default service // 对应方案二

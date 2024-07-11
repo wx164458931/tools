@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const getUsefullValue = (str: any) => {
   if(str === null || str === undefined) return ''
   return str
@@ -16,7 +18,7 @@ const getUsefullLog = (title: string, content: string) => {
 }
 
 const getUserInfoStyle = (title: string, content: string, color: string) => {
-  let res = [];
+  const res = [];
 
   if(title && content) {
     res.push(`background:${color};border:1px solid ${color}; padding: 1px; border-radius: 2px 0 0 2px; color: #fff;`)
