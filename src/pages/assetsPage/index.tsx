@@ -1,10 +1,11 @@
 import React from "react";
+import Markdown from "../../component/markdown";
+import mdContent from './readme.md?raw'
 
 const AssetsPage: React.FC = () => {
   return (
     <div className="article">
-      <h1>说明</h1>
-      <p>静态资源文件夹</p>
+      <Markdown md={mdContent}/>
     </div>
   );
 }

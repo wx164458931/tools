@@ -1,0 +1,104 @@
+@property --bg-roate {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.demo-container {
+  display: flex;
+  justify-content: flex-start;
+  .markdown-wrapper {
+    padding-right: 24px;
+    flex-basis: 65%;
+    overflow: auto;
+  }
+  .demo-wrapper {
+    padding: 24px;
+    flex: 1;
+    border-left: 1px solid #ccc;
+    .demp-items-container {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 24px;
+      width: 100%;
+      height: 100%;
+      padding: 24px;
+      background: #000;
+      color: #fff;
+      overflow: auto;
+      .demo-item {
+        flex-shrink: 0;
+        .demo-item-bg {
+          width: 196px;
+          height: 292px;
+          margin-bottom: 12px;
+          background-image: linear-gradient(0deg, #5ddcff, #3c67e3 43%, #4e00c2);
+        }
+        .demo-item-title {
+          text-align: center;
+        }
+        .demo-item-animation-gb {
+          background-image: linear-gradient(var(--bg-roate), #5ddcff, #3c67e3 43%, #4e00c2);
+          animation: bg-rotaing 3s linear infinite;
+        }
+
+        @keyframes bg-rotaing {
+          to {
+            --bg-roate: 360deg
+          }
+        }
+
+        .demo-item-roate-border {
+          width: 196px;
+          height: 292px;
+          margin-bottom: 14px;
+          border-radius: 4px;
+          background: #000;
+          position: relative;
+          background-image: linear-gradient(var(--bg-roate), #5ddcff, #3c67e3 43%, #4e00c2);
+          animation: bg-rotaing 3s linear infinite;
+          &::after {
+            content: ' ';
+            position: absolute;
+            inset: 4px;
+            border-radius: 4px;
+            background: #000;
+            z-index: 0;
+          }
+          .demo-item-roate-border-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%);
+            z-index: 1;
+          }
+        }
+
+        .demo-item-test1-bg {
+          background-image: linear-gradient(0deg, #5ddcff, #3c67e3 43%, #4e00c2);
+          animation: bg-test1-rotaing 3s linear infinite;
+        }
+        
+        @keyframes bg-test1-rotaing {
+          to {
+            background-image: linear-gradient(360deg, #5ddcff, #3c67e3 43%, #4e00c2);
+          }
+        }
+
+        .demo-item-test2-bg {
+          --r: 0deg;
+          background-image: linear-gradient(var(--r), #5ddcff, #3c67e3 43%, #4e00c2);
+          animation: bg-test2-rotaing 3s linear infinite;
+        }
+        
+        @keyframes bg-test2-rotaing {
+          to {
+            --r: 360deg;
+          }
+        }
+      }
+    }
+  }
+}

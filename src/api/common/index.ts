@@ -102,6 +102,13 @@ export function getUserInfo() {
                     path: '/animation-delay',
                     visiable: true,
                     component: '/stylesPage/animation/animationDelay',
+                  },
+                  {
+                    id: 'houdini-api',
+                    name: 'houdiniAPI',
+                    path: '/houdini-api',
+                    visiable: true,
+                    component: '/stylesPage/animation/houdiniAPI',
                   }
                 ]
               }

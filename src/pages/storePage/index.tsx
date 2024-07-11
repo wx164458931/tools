@@ -1,10 +1,11 @@
 import React from "react";
+import Markdown from "../../component/markdown";
+import mdContent from './readme.md?raw'
 
 const StorePage: React.FC = () => {
   return (
     <div className="article">
-      <h1>说明</h1>
-      <p>采用redux进行的全局状态管理</p>
+      <Markdown md={mdContent}/>
     </div>
   );
 }
