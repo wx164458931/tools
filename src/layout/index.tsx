@@ -1,89 +1,42 @@
-import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
+// import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Breadcrumb, Layout, Menu, Spin } from 'antd';
-import { createElement, useEffect, useMemo, useState } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import EventEmitter from '../common/eventEmitter'
-import CustomizerEvent from '../common/customizerEvent'
-import { selectUserStatus, login, LoginStatus, selectSiders, selectMenus } from '../store/userinfo'
-import { useAppSelector, useAppDispatch } from '../store'
-import styles from './index.module.scss'
-import useDynamicRoutes from '../router';
+import { /** createElement, */ useEffect, useMemo, useState } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import EventEmitter from '../common/eventEmitter';
+import CustomizerEvent from '../common/customizerEvent';
+import { selectUserStatus, login, LoginStatus, selectSiders, selectMenus } from '../store/userinfo';
+import { useAppSelector, useAppDispatch } from '../store';
+// import useDynamicRoutes from '../router';
+import styles from './index.module.scss';
 
 const { Header, Content, Sider } = Layout;
 
 const App: React.FC = () => {
-  const dispatch = useAppDispatch()
-  const navigate = useNavigate()
-  const routers = useDynamicRoutes()
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  // const routers = useDynamicRoutes()
   const { pathname } = useLocation();
   const siders = useAppSelector(selectSiders);
   const menus = useAppSelector(selectMenus);
   const logingStatus = useAppSelector(selectUserStatus);
-  const [activeHeaderKey, setHeaderKey] = useState('')
-  const [activeSiderKey, setSiderKey] = useState('')
-  const [openSiderKeys, setOpenDiserKeys] = useState<string[]>([])
-  const [siderMenus, setSiderMenus] = useState<MenuProps['items']>([])
+  const [activeHeaderKey, setHeaderKey] = useState('');
+  const [activeSiderKey, setSiderKey] = useState('');
+  const [openSiderKeys, setOpenDiserKeys] = useState<string[]>([]);
+  const [siderMenus, setSiderMenus] = useState<MenuProps['items']>([]);
 
   const headerMenus = siders.map(item => {
     return {
       label: item.label,
       key: item.key,
     }
-  })
-
-  useEffect(() => {
-    EventEmitter.on(CustomizerEvent.UNLOGIN, clearUserInfo)
-    dispatch(login())
-
-    if(pathname !== '/') {
-      initOpenKeys(pathname)
-    }
-    return () => {
-      EventEmitter.off(CustomizerEvent.UNLOGIN, clearUserInfo)
-    }
-  }, [])
-
-  useEffect(() => {
-    if(pathname === '/') {
-      if(siders && siders.length > 0) {
-        let _siders = siders[0];
-
-        while(_siders.children && _siders.children.length > 0) {
-          _siders = _siders.children[0];
-        }
-
-        if(_siders?.key) {
-          setHeaderKey(_siders?.key.split('/').filter(Boolean)[0])
-          // setSiderKey(path)
-          initSiderActiveKey(_siders?.key)
-          navigate(_siders?.key)
-          initOpenKeys(_siders?.key)
-        }
-      }
-    }
-    else {
-      if(logingStatus === LoginStatus.Login) {
-        const pathArr = pathname.split('/').filter(Boolean);
-        setHeaderKey(`/${pathArr[0]}`)
-        initSiderActiveKey(pathname)
-      }
-    }
-  }, [pathname, siders, logingStatus])
-
-  useEffect(() => {
-    if(siders.length > 0 && activeHeaderKey) {
-      const curMenu = siders.find(item => item.key === activeHeaderKey)
-      const siderMenu = curMenu?.children
-      setSiderMenus((siderMenu as MenuProps['items']) || [])
-    }
-  }, [siders, activeHeaderKey])
+  });
 
   const breadcrumbs = useMemo(() => {
     const pathArr = pathname.split('/').filter(Boolean);
     const items:string[] = [];
     let _ms = [...menus];
-    pathArr.forEach((el, index) => {
+    pathArr.forEach((el) => {
       const m = _ms.find(item => item.path === "/" + el)
 
       if(m) {
@@ -154,6 +107,53 @@ const App: React.FC = () => {
 
     setSiderKey(activeKey)
   }
+
+  useEffect(() => {
+    EventEmitter.on(CustomizerEvent.UNLOGIN, clearUserInfo)
+    dispatch(login())
+
+    if(pathname !== '/') {
+      initOpenKeys(pathname)
+    }
+    return () => {
+      EventEmitter.off(CustomizerEvent.UNLOGIN, clearUserInfo)
+    }
+  }, []);
+
+  useEffect(() => {
+    if(pathname === '/') {
+      if(siders && siders.length > 0) {
+        let _siders = siders[0];
+
+        while(_siders.children && _siders.children.length > 0) {
+          _siders = _siders.children[0];
+        }
+
+        if(_siders?.key) {
+          setHeaderKey(_siders?.key.split('/').filter(Boolean)[0])
+          // setSiderKey(path)
+          initSiderActiveKey(_siders?.key)
+          navigate(_siders?.key)
+          initOpenKeys(_siders?.key)
+        }
+      }
+    }
+    else {
+      if(logingStatus === LoginStatus.Login) {
+        const pathArr = pathname.split('/').filter(Boolean);
+        setHeaderKey(`/${pathArr[0]}`)
+        initSiderActiveKey(pathname)
+      }
+    }
+  }, [pathname, siders, logingStatus])
+
+  useEffect(() => {
+    if(siders.length > 0 && activeHeaderKey) {
+      const curMenu = siders.find(item => item.key === activeHeaderKey)
+      const siderMenu = curMenu?.children
+      setSiderMenus((siderMenu as MenuProps['items']) || [])
+    }
+  }, [siders, activeHeaderKey])
 
   return (
     <Spin spinning={useAppSelector(selectUserStatus) === LoginStatus.Loading} wrapperClassName={styles['spin-container']}>

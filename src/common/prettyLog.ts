@@ -159,6 +159,11 @@ const img = (url: string, scale: number = 1) => {
   img.src = url;
 }
 
+/**
+ * 导出一个注册方法
+ * 调用该方法，会使用PerttyLog对象覆盖宿主环境中原本的console对象，使得在注册之后所有的console中的方法都不在直接调用宿主环境的console中的原方法
+ * @param withTitle 
+ */
 export function registerPerttyLog(withTitle: boolean = false) {
   if(!withTitle) {
     globalThis.console = {
@@ -176,6 +181,8 @@ export function registerPerttyLog(withTitle: boolean = false) {
       errorWithTitle,
       debugWithTitle
     }
+
+    info('PerttyLog register success!')
   }
   else {
     globalThis.console = {
@@ -193,9 +200,20 @@ export function registerPerttyLog(withTitle: boolean = false) {
       oError: error,
       oDebug: debug,
     }
+
+    infoWithTitle('info','PerttyLog register success!')
   }
 }
 
+/**
+ * 默认导出
+ * 导出对象，包含console中的所有方法，
+ * 覆盖了其中的一些方法，增加了一些方法
+ * 使用时以前使用console.log等的地方，可以改成如下方式
+ * import _clog from './prettyLog';
+ * 
+ * _clog.log('hello world!');
+ */
 export default {
   ..._console,
   log,

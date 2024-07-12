@@ -1,10 +1,11 @@
 import React from "react";
+import Markdown from "../../component/markdown";
+import mdContent from './readme.md?raw'
 
 const LayoutPage: React.FC = () => {
   return (
     <div className="article">
-      <h1>说明</h1>
-      <p>项目页面的入口，不同的页面可以使用不同的入口</p>
+      <Markdown md={mdContent}/>
     </div>
   );
 }

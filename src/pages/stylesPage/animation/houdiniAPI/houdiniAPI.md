@@ -3,8 +3,8 @@
 ## 背景说明
 
 houdini API是浏览器开放的一套非常底层的API，它允许使用者通过它来干预浏览器渲染进程的过程，例如重绘、回流、动画等等各个方面。  
-它包含cssAPI和JSAPI两个部分。其中JSAPI和部分CSSAPI目前还没有标准化，其使用方法后续可能变更、资料稀少，所以这部分API还了解得不多。  
-这次主要了解其中已经标准化的[CSS Properties and Values API](https://developer.mozilla.org/zh-CN/docs/Web/API/CSS_Properties_and_Values_API)。
+它包含cssAPI和JSAPI两个部分。其中很多API还没有标准化，在实验室阶段，其使用方法后续可能变更、资料稀少，所以对houdiniAPI中的大部分API还了解得不多。  
+这次主要了解其中已经基本算是标准化的[CSS Properties and Values API](https://developer.mozilla.org/zh-CN/docs/Web/API/CSS_Properties_and_Values_API)。
 
 ## CSS Properties and Values API
 
@@ -32,7 +32,7 @@ window.CSS.registerProperty({
 
 ### 用处
 
-如左边实例所示，普通渐变背景所示的是一个普通的渐变背景，其样式代码如下：
+如左边示例所示，<font color=#1890ff>普通渐变背景</font>所示的是一个普通的渐变背景，其样式代码如下：
 
 ```css
 .demo-item-bg {
@@ -43,8 +43,10 @@ window.CSS.registerProperty({
 }
 ```
 
-如果这个时候我们想要实现示例左边的带有动画的渐变背景，在没有houdiniAPI的自定义属性之前，我们只能通过js来实现，因为渐变背景不属于数值类属性变化，是没法应用css动画的，只有靠JS来定时修改渐变背景的方式来实现动画，非常麻烦。  
-我们可以利用CSS动画做如下尝试：  
+如果这个时候我们想要实现示例左边的<font color=#1890ff>带有动画的渐变背景</font>，在没有houdiniAPI的自定义属性之前，我们只能通过js来实现，因为渐变背景不属于数值类属性变化，是没法应用css动画的，只有靠JS来定时修改渐变背景的方式来实现动画，非常麻烦。
+
+
+我们可以在不适用houdiniAPI的情况下利用CSS动画做如下尝试，看看是否能够实现渐变背景动画:  
 
 #### 尝试1
 
@@ -66,7 +68,7 @@ window.CSS.registerProperty({
 }
 ```
 
-然后我们就得到左侧示例的test1渐变背景，发现动画并没有动起来。
+然后我们就得到左侧示例的<font color=#1890ff>test1渐变背景</font>，发现动画并没有动起来。
 
 #### 尝试2
 
@@ -89,7 +91,7 @@ window.CSS.registerProperty({
 }
 ```
 
-这样我们得到了左侧示例的test2渐变背景，发现依然没有用，因为animation只能应用到数值类属性上。单纯的改变变量值，而渐变背景的属性并没有涉及到数值类属性，动画依然没法生效。
+这样我们得到了左侧示例的<font color=#1890ff>test2渐变背景</font>，发现依然没有用，因为animation只能应用到数值类属性上。单纯的改变变量值，而渐变背景的属性并没有涉及到数值类属性，动画依然没法生效。
 
 #### 尝试3
 
@@ -117,14 +119,14 @@ window.CSS.registerProperty({
 }
 ```
 
-然后我们得到了想要的带动画的渐变背景，因为这个时候我们自定义了一个数值类css属性，动画修改了这个属性，所以渲染进程会去应用动画。  
+然后我们得到了想要的<font color=#1890ff>带有动画的渐变背景</font>，因为这个时候我们自定义了一个数值类css属性，动画修改了这个属性，所以渲染进程会去应用动画。  
 其中
 
 ```css
 @property
 ```
 
-这是定义一个自定义属性的关键字，属性名和变量一样，要求两个-开头
+这是定义一个自定义属性的关键字，属性名和变量一样，要求--开头
 
 ```css
 syntax

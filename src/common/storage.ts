@@ -6,7 +6,8 @@
  * yarn add md5
  * npm i md5
  */
-import md5 from "md5"
+import md5 from "md5";
+import browserFingerprint from "./browserFingerprint";
 
 /**
  * 字符串转base64
@@ -72,7 +73,7 @@ const base64ToString = (() => {
  */
 const hash_base = (() => {
   if(Object.prototype.hasOwnProperty.call(globalThis, 'navigator')) {
-    return navigator.userAgent;
+    return navigator.userAgent + browserFingerprint;
   }
   //@ts-ignore
   else if(process) {

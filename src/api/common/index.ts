@@ -53,6 +53,13 @@ export function getUserInfo() {
                     visiable: true,
                   },
                   {
+                    id: "components",
+                    name: "components",
+                    path: "/components",
+                    component: "/componentPage",
+                    visiable: true,
+                  },
+                  {
                     id: "layout",
                     name: "layout",
                     path: "/layout",

@@ -2,7 +2,7 @@ import type { RouteConfigPathInfo, RouteInfo } from './types'
 import { RouteObject } from 'react-router-dom'
 
 export function getRouteUsefullPath(path: string): RouteConfigPathInfo {
-  let arr = path.split('/');
+  const arr = path.split('/');
   //去掉最后一项
   arr.pop();
 

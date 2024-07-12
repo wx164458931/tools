@@ -1,15 +1,16 @@
-import { createBrowserRouter, RouteObject, useNavigate } from 'react-router-dom'
-import { getRouteUsefullPath } from './util.ts'
-import Layout from '../layout'
-import Login from '../pages/login/index.tsx'
-import Error from '../pages/error/index.tsx'
-import type { DesignatedRequired } from '../common/tsTools/common.ts'
-import { useState, useEffect } from 'react'
-import { selectMenus } from '../store/userinfo/index.ts'
-import { useAppSelector } from '../store'
-import { cloneDeep } from 'lodash'
-import { IMenuItem } from '../api/common/types.ts'
-import { IRouteConfig } from './types.ts'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect } from 'react';
+import { createBrowserRouter, RouteObject, /**useNavigate */ } from 'react-router-dom';
+import { cloneDeep } from 'lodash';
+// import { getRouteUsefullPath } from './util.ts'
+import Layout from '../layout';
+import Login from '../pages/login/index.tsx';
+import Error from '../pages/error/index.tsx';
+// import type { DesignatedRequired } from '../common/tsTools/common.ts'
+import { selectMenus } from '../store/userinfo/index.ts';
+import { useAppSelector } from '../store';
+import { IMenuItem } from '../api/common/types.ts';
+import { IRouteConfig } from './types.ts';
 
 const routeComponents = import.meta.glob(['../pages/**/index.tsx', '!../pages/**/components/**/index.tsx', '../pages/**/common/**/index.tsx'])
 const routeConfigs = import.meta.glob(['../pages/**/page.ts', '!../pages/**/components/**/page.ts', '../pages/**/common/**/page.ts'], {

@@ -1,6 +1,6 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
-import userInfo, { setUserInfo, setLoginStatus, LoginStatus, logout } from './userinfo'
+import userInfo, { logout } from './userinfo'
 import EventEmitter from '../common/eventEmitter'
 import CustomizerEvent from '../common/customizerEvent'
 

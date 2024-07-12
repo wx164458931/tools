@@ -1,4 +1,4 @@
-import { RouterProvider, useNavigation, useLocation } from 'react-router-dom'
+import { RouterProvider } from 'react-router-dom'
 import useDynamicRoutes from './router'
 import './App.css'
 import './styles/common.scss'
