@@ -16,7 +16,6 @@ const { Header, Content, Sider } = Layout;
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  // const routers = useDynamicRoutes()
   const { pathname } = useLocation();
   const siders = useAppSelector(selectSiders);
   const menus = useAppSelector(selectMenus);
