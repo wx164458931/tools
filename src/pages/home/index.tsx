@@ -1,6 +1,6 @@
 import React from "react";
 import Markdown from "../../component/markdown";
-import mdContent from './readme.md?raw'
+import mdContent from './readme.md?raw';
 
 const Home: React.FC = () => {
   return (

@@ -7,6 +7,7 @@ import EventEmitter from '../common/eventEmitter';
 import CustomizerEvent from '../common/customizerEvent';
 import { selectUserStatus, login, LoginStatus, selectSiders, selectMenus } from '../store/userinfo';
 import { useAppSelector, useAppDispatch } from '../store';
+// import KeepAlive from '../component/keepAlive';
 // import useDynamicRoutes from '../router';
 import styles from './index.module.scss';
 
@@ -189,7 +190,9 @@ const App: React.FC = () => {
                 minHeight: 280,
               }}
             >
+              {/* <KeepAlive> */}
               <Outlet/>
+              {/* </KeepAlive> */}
             </Content>
           </Layout>
         </Layout>

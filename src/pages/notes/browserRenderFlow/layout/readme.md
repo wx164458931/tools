@@ -12,17 +12,48 @@ Layout树和DOM树类似，但是不完全一样。例如(下列列表没有完�
 - layout树中的对象是JS无法访问的，它的元素不是DOM对象。但是可以通过JS我们拿到一些Layout树的属性，例如元素的clientHeight等
 - 还有其他等等
 
-这其中比较需要注意的是对元素的位置、层次等信息的计算。要了解这些信息，就得了解CSS的视觉格式化模型
+这其中比较需要注意的是对元素的位置、层次等信息的计算。要了解这些信息，就得了解CSS的的重要规范
 
-这儿特别说明一点，**行级元素**、**块级元素**等说法过时且错误。原因是**元素**是**HTML**中的概率。  
-但是**行**、**块**包括**弹性**等属性是由**CSS属性**决定的，它们其实和HTML并没有任何关系，只和CSS的盒模型有关，HTML只提供语义化标签。  
-当我们使用**行级元素**、**块级元素**等说法的时候，天然包含一种含义，既某种元素的盒属性是HTML标签决定的，这个HTML标签天然就是某个盒模型属性，但实际上不是，他们的默认的盒模型属性是由浏览器默认样式表提供的，可以被用户自定义的样式表修改。  
-所以更准确的说法是**行盒**、**块盒**等直接描述其CSS盒属性的说法，剥离其HTML的关系
+[css基础规范(css2)](https://drafts.csswg.org/css2/#about)  
+[css3规范](https://drafts.csswg.org/?path=css3)
+
+## 盒模型
+
+重点关注box-sizing为不同值时盒模型的不同表现。
+
+详情见：[https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_box_model/Introduction_to_the_CSS_box_model](https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_box_model/Introduction_to_the_CSS_box_model)
+
+## 布局模式
+
+主要有以下几种：  
+
+- 块布局
+- 行内布局
+- 表格布局
+- 定位布局
+- 弹性盒布局
+- 网格布局
+
+慎用行内布局
+
+详情见：[https://developer.mozilla.org/zh-CN/docs/Web/CSS/Layout_mode](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Layout_mode)
 
 ## 视觉格式化模型
 
+这是CSS的基础概念之一，所以非常重要  
+
+详情见：[https://developer.mozilla.org/zh-CN/docs/Web/CSS/Visual_formatting_model](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Visual_formatting_model)  
+
+其中有一些比较重要的概念：  
+
 ### 包含块
+
+详情见：[https://developer.mozilla.org/zh-CN/docs/Web/CSS/Containing_block](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Containing_block)
 
 ### BFC
 
-### FFC
+详情见：[https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_display/Block_formatting_context](https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_display/Block_formatting_context)
+
+## 外边距合并
+
+详情见：[https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_box_model/Mastering_margin_collapsing](https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_box_model/Mastering_margin_collapsing)

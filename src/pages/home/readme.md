@@ -9,6 +9,7 @@
 - 将整体的项目不停完善，可以作为以后自己新开react项目的模板使用。
 - 项目中不停完善一些ts类型工具（包括type challenges），作为TS的学习
 - 在项目中加入一些常用的工具方法等，例如axios的ts封装等等
+- 记录一些学习心得和笔记
 
 ## 构建工具选择
 
@@ -29,7 +30,7 @@ vite是基于rollup和esmodule基础上新开发的构建工具，最佳支持�
 
 #### vite优势
 
-- vite自己继承了devserver,以及scss、lessloader等loader,很大程度上可以实现开箱即用
+- vite自己集成了devserver,以及scss、lessloader等loader,很大程度上可以实现开箱即用
 - vite的构建速度非常快，特别是在在开发环境下，由于使用了esmodule的方式，构建速度比webpack快了10倍，在开发体验上非常好，在生产环境目前使用的是rollup进行构建打包，多数情况下和打包速度也小幅优于webpack，只是生态相对webpack有些不足
 
 ## 状态管理工具
