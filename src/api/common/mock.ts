@@ -129,6 +129,21 @@ const UserMockData: MockData<MockUrlEnum.GetUserInfo> = {
               component: '/stylesPage/animation/houdiniAPI',
             }
           ]
+        },
+        {
+          id: 'components',
+          name: '组件',
+          path: '/components',
+          visiable: true,
+          children: [
+            {
+              id: 'search',
+              name: '搜索栏组件',
+              path: '/search',
+              visiable: true,
+              component: '/componentPage/searchComponent'
+            }
+          ]
         }
       ]
     },
@@ -207,6 +222,22 @@ const UserMockData: MockData<MockUrlEnum.GetUserInfo> = {
               visiable: true,
               component: '/notes/browserRenderFlow/draw',
             }
+          ]
+          // component: '/notes/browserRenderFlow',
+        },
+        {
+          id: 'eventLoop',
+          name: '事件循环',
+          path: '/event',
+          visiable: true,
+          children: [
+            {
+              id: 'eventLoopOverflow',
+              name: '事件循环概览',
+              path: '/overflow',
+              visiable: true,
+              component: '/notes/eventLoop',
+            },
           ]
           // component: '/notes/browserRenderFlow',
         }

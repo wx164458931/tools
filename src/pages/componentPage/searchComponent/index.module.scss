@@ -1,0 +1,14 @@
+.demo-container {
+  display: flex;
+  justify-content: flex-start;
+  .markdown-wrapper {
+    padding-right: 24px;
+    flex-basis: 40%;
+    overflow: auto;
+  }
+  .demo-wrapper {
+    padding: 24px;
+    flex: 1;
+    border-left: 1px solid #ccc;
+  }
+}

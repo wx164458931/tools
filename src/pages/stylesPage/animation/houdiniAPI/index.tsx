@@ -1,6 +1,6 @@
 import React from "react";
 import Markdown from "../../../../component/markdown";
-import mdContent from './houdiniAPI.md?raw'
+import mdContent from './houdiniAPI.md?raw';
 import styles from './index.module.scss';
 
 const Houdini: React.FC = () => {

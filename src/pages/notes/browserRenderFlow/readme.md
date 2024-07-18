@@ -37,7 +37,7 @@
       <script blocking="render" async src="async-script.js"></script>
     ```
 
-    这表明异步加载js，不阻塞渲染，但是要求在渲染之前执行该js
+    这表明异步加载js，不阻塞解析，但是要求在渲染之前执行该js
 
 ## reflow(回流)
 
@@ -47,7 +47,73 @@
 而Layout是整个流程中最耗时的操作。所以回流是一个昂贵的操作。
 
 需要特殊说明的一点，对dom树的修改、，修改已有的dom等几何信息，通常不会立刻reflow，浏览器通常会将多次reflow操作放到任务队列中，等待当前js执行完成后，合并为一次只进行一次reflow，减少reflow次数，所以对几何信息的增删改引起的reflow是异步完成的，这是浏览器的优化之一。  
-但是因为上述优化，会导致获取dom的几何信息时，可能会获取到失效的信息，所以对几何信息的获取回立刻reflow。例如document.querySelector('#root').clientHeight等操作是会立刻reflow，因为浏览器为了确保获取到的信息是实时有效的，会进行一次新的Layout之后更新几何信息之后才让拿到真实的结果
+
+也是因为上述优化，会导致获取dom的几何信息时，如果浏览器不采取任何措施的话，就有很大可能会获取到失效的信息。  
+针对这个问题，浏览器采用了几何信息的获取回立刻reflow的策略。例如document.querySelector('#root').clientHeight等操作是会立刻reflow，因为浏览器为了确保获取到的信息是实时有效的，会强制进行一次新的Layout更新几何信息之后才让拿到真实的结果。  
+
+但是注意，这次reflow他只会重新Layout，拿到Layout树，并不会知道到后面的流程导致页面发生变化，因此我们通常可以利用这一点做一些巧妙的操作，如以下代码：  
+
+```css
+.btn {
+  /** 它的属性不重要 */
+}
+
+.detail {
+  height: 0;
+  transition: 1s;
+  /** 其他属性不重要 */
+}
+
+/**
+ * 这段样式的含义是detail包含的容高度未知，但是期望btn元素hover时能有一个高度缓缓增高到目标高度的效果
+ * 当然，现在的这段代码不会生效，因为transition应用的属性只能数值到数值能有效，auto并不是一个有效的数值。
+ * 我们可以用一些纯CSS方案实现，但是现在为了演示这个效果，使用js来实现
+ */
+.btn:hover .detail {
+  height: auto;
+}
+```
+
+```js
+/**
+ * 为了实现上述效果，可以有以下js代码
+ */
+const btnDom = document.querySelector('.btn');
+const detailDom = document.querySelector('.detail')
+
+btnDom.onmouseenter = () => {
+  detailDom.style.height = 'auto';
+  const { height } = detailDom.getBoundingClientRect(); // 第一次强制回流，获取了dom的几何信息，但是这个只会重新Layout，并不会重新绘制
+  detailDom.style.height = 0; // 拿到展开后的高度后，将高度设置回0
+  detailDom.style.height = height + 'px';// 然后再把高度设置为数值的目标高度，因为高度是数值类型的了，所以transition能生效
+}
+
+btnDom.onmouseleave = () => {
+  detailDom.style.height = 0; 
+}
+```
+
+如果你写了上述代码，思路是对了，但是发现并不会生效，原因就是这两行代码之间没有任何额外操作，浏览器回将两次回导致reflow的操作在当前js代码执行完之后，将他们合并成一次也就是最新的值。  
+也就是相当于对于detail来说，height的属性值变化是从'auto'变化到具体的高度，这就相当于设置height为0的这一行代码没有生效。因此过度效果出不来  
+
+```js
+detailDom.style.height = 0;
+detailDom.style.height = height + 'px';
+```
+
+因此我们需要把代码修改成如下：  
+
+```js
+btnDom.onmouseenter = () => {
+  detailDom.style.height = 'auto';
+  const { height } = detailDom.getBoundingClientRect(); // 第一次强制回流，获取了dom的几何信息，但是这个只会重新Layout，并不会重新绘制
+  detailDom.style.height = 0; // 拿到展开后的高度后，将高度设置回0
+  detailDom.getBoundingClientRect(); // 新增代码，目的是重新获取一次几何信息，强制reflow，让高度设置为0生效
+  detailDom.style.height = height + 'px';// 然后再把高度设置为数值的目标高度，因为高度是数值类型的了，所以transition能生效
+}
+```
+
+这就是利用浏览器reflow机制能够做的一些巧妙的方案
 
 ## repaint(重绘)
 
@@ -71,7 +137,28 @@
 }
 ```
 
-这里transform信息的修改是通过动画完成的，连CSSOM修改都不存在了，所以样式计算这一步都也省了，这样的动画就完全和渲染主线程无关了，这个时候即使渲染主线程一直在执行JS代码（俗称卡死了），但是你会发现动画依然顺畅，因为这个只涉及到了合成线程和GPU进程，和渲染主线程没有任何关系
+这里transform信息的修改是通过动画完成的，连CSSOM修改都不存在了，所以样式计算这一步都也省了，这样的动画就完全和渲染主线程无关了，这个时候即使渲染主线程一直在执行JS代码（俗称卡死了），但是你会发现动画依然顺畅，因为这个只涉及到了合成线程和GPU进程，和渲染主线程没有任何关系  
+
+与之相对的是使用其他方式来实现动画，就要低效不少，例如将上述的CSS代码改成如下：  
+
+```css
+.ball {
+  position: absolute;
+  left: 0;
+  animation: move 3s linear infinite;
+}
+
+@keyframes move {
+  to {
+    left: 0;
+  }
+}
+```
+
+上述代码在设置合适的包含块的时候，大多数情况下和使用transform视觉效果一样，体验不出差距。  
+但是如果某个时刻执行了某个耗时的JS代码。就会发现这个动画也同步的卡住不动了。  
+因为修改的定位信息的left属性，这个属于几何属性，需要从样式计算开始到最后的draw所有步骤都要重新过一遍。  
+而其中的样式计算、layout、layer、paint这几个步骤都是在渲染主线程中完成的，但是此时渲染主线程在执行耗时的JS代码。是没有办法来处理这个渲染流程的。所以动画就停止卡主了
 
 ## 滚动条
 

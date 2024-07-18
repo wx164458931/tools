@@ -1,0 +1,13 @@
+.search-item-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  .search-item-label {
+    margin-right: 6px;
+    white-space: nowrap;
+    position: relative;
+    &::after{
+      content: ':';
+    }
+  }
+}

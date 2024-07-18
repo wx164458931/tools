@@ -124,11 +124,17 @@ const KeepAlive = forwardRef<IKeepALiveRef, HTMLAttributes<HTMLElement> & IKeepA
       nodeMap.delete(keyIt.next().value)
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const Component = React.Children.only(children)?.type;
+
+    console.log('React.Children.only(children)', React.Children.only(children));
+
     /**
      * 将当前路由对应的组件缓存
      */
     nodeMap.set(pathname + search, {
-      node: children,
+      node: <Component key={pathname + search}/>,
       time: Date.now(),
       needCached: toCache
     })

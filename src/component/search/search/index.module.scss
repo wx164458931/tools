@@ -1,0 +1,25 @@
+.search-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  .search-items-container {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    column-gap: 24px;
+    .search-items-main-container {
+      display: flex;
+      justify-content: flex-start;
+      column-gap: 8px;
+    }
+    .search-items-btns-container {
+      display: flex;
+      justify-content: flex-start;
+      column-gap: 8px;
+    }
+  }
+  .search-advanced-btns-container {
+    
+  }
+}

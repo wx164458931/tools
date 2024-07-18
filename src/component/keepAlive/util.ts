@@ -1,6 +1,7 @@
 import type { RuleFunction, cacheItem } from './type';
 
 export const nodeMap = new Map<string, cacheItem>()
+
 /**
  * 计算组件是否需要缓存
  * @param pathname 
