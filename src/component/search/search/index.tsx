@@ -158,7 +158,7 @@ const Search = forwardRef<ISearchRef, HTMLAttributes<HTMLElement> & ISearchProps
   const searchClick = () => {
     if(isFunction(onSearch)) {
       if(search) {
-        onSearch<typeof search>({
+        onSearch({
           ...searchValueRef.current
         } as SearchObj)
       }
@@ -167,7 +167,7 @@ const Search = forwardRef<ISearchRef, HTMLAttributes<HTMLElement> & ISearchProps
 
   const resetClick = () => {
     if(isFunction(onReset)) {
-      const res = onReset<SearchObj>();
+      const res = onReset();
 
       if(res) {
         setSearchValues({
@@ -183,7 +183,7 @@ const Search = forwardRef<ISearchRef, HTMLAttributes<HTMLElement> & ISearchProps
 
   const refreshClick = () => {
     if(isFunction(onRefresh)) {
-      onRefresh<SearchObj>({
+      onRefresh({
         ...searchValueRef.current
       } as SearchObj)
     }

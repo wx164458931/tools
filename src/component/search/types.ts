@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReactNode } from "react"
 
 export type SearchBaseObj = {
-  [key: string]: unknown
+  [key: string]: any
 }
 
 export interface ISearchRef {
@@ -77,7 +78,7 @@ export type SearchPropsSearchObjType<T> = T extends ISearchInstance<any> ? Retur
 /**
  * 搜索栏props
  */
-export interface ISearchProps extends ISearchPropsConfig {
+export interface ISearchProps<T = any> extends ISearchPropsConfig {
   
   /**
    * 值变更回调
@@ -86,29 +87,29 @@ export interface ISearchProps extends ISearchPropsConfig {
    * @param values 
    * @returns 
    */
-  onValueChange?: <T extends SearchPropsSearchObjType<ISearchProps['search']>>(changeValues: T, values: T) => void
+  onValueChange?: (changeValues: T, values: T) => void
   /**
    * 搜索回调
    * @param values 
    * @returns 
    */
-  onSearch?: <T extends (ISearchInstance | undefined)>(values: SearchPropsSearchObjType<T>) => void
+  onSearch?: (values: T) => void
   /**
    * 重置回调
    * @returns 
    */
-  onReset?: <T extends SearchPropsSearchObjType<ISearchProps['search']>>() => (T | void)
+  onReset?: () => (T | void)
   /**
    * 刷新回调
    * @param values 
    * @returns 
    */
-  onRefresh?: <T extends SearchPropsSearchObjType<ISearchProps['search']>>(values: T) => void
+  onRefresh?: (values: T) => void
   /**
    * 搜索栏组件实例，类似antd的form，用于调用操作对应方法
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  search?: ISearchInstance<any>
+  search?: ISearchInstance<T>
 }
 
 export interface ISearchItemPorps {
@@ -136,7 +137,7 @@ export interface IAdvancedSearchModalProps {
 export type FunctionType = (...args: any) => any
 
 export interface ISearchContext {
-  searchValues: Record<string, unknown>
-  setFieldValue: (key: string, value: unknown) => void
-  setFieldsValue: (values: Record<string, unknown>) => void
+  searchValues: Record<string, any>
+  setFieldValue: (key: string, value: any) => void
+  setFieldsValue: (values: Record<string, any>) => void
 }
