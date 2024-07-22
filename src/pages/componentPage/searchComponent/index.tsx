@@ -8,10 +8,10 @@ import styles from './index.module.scss';
 const SearchComponent: React.FC = () => {
   const search = Search.useSearch<{
     keywords: string,
-    checkbox: string,
+    checkbox: boolean,
     radio: string
   }>()
-  // search.getFieldValue()
+  // const res = search.getFieldValue('checkbox')
   const [form] = Form.useForm<{
     keywords: string,
     checkbox: string,
@@ -93,17 +93,17 @@ const SearchComponent: React.FC = () => {
           }}
           form={form}
         >
-          <Form.Item fixed label="文本输入框" name="keywords">
+          <Form.Item label="文本输入框" name="keywords">
             <Input/>
           </Form.Item>
-          <Form.Item fixed label="复选框" name="checkbox">
+          <Form.Item label="复选框" name="checkbox">
             <Checkbox.Group options={[
               { label: 'Apple', value: 'Apple' },
               { label: 'Pear', value: 'Pear' },
               { label: 'Orange', value: 'Orange' },
             ]} />
           </Form.Item>
-          <Form.Item fixed label="单选框" name="radio">
+          <Form.Item label="单选框" name="radio">
             <Radio.Group options={[
               { label: 'Apple', value: 'Apple' },
               { label: 'Pear', value: 'Pear' },

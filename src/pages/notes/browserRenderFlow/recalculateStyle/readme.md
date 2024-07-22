@@ -76,7 +76,7 @@ div {
 优先级从上往下依次升高，通常情况下用户代理和用户的样式表中很少会存在!important，所以通常情况下页面作者的!important就是重要性最高的样式表  
 
 然后特别说明下CSS动画。  
-对于CSS动画来说，首先@keyframe是不参数层叠的。然后如果有多个满足条件的keyframe,将会是重要性最高的来源样式中最后的一个生效，而不是讲他们组合到一起。同时@keyframe定义的值依然会被!important覆盖
+对于CSS动画来说，首先@keyframe是不参与层叠的。然后如果有多个满足条件的keyframe,将会是重要性最高的来源样式中最后的一个生效，而不是讲他们组合到一起。同时@keyframe定义的值依然会被!important覆盖
 
 最后，详细的层叠规则，请参考这个文档[https://developer.mozilla.org/zh-CN/docs/Web/CSS/Cascade](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Cascade)
 

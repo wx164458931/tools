@@ -33,7 +33,7 @@ const initialState: IUserInfo & {
 const getSiders = (menus: IMenuItem[]) => {
   const _menus = menus.filter(el => el.visiable)
 
-  let childrenMenusStack: ({
+  const childrenMenusStack: ({
     menu: IMenuItem;
     sider: StoreSiderItem & {
       parentKey?: string;
@@ -139,7 +139,7 @@ export const userInfoSlice = createSlice({
     setLoginStatus: (state, action) => {
       state.loginStatus = action.payload
     },
-    logout: (state, action) => {
+    logout: (state) => {
       state.name = '';
       state.account = '';
       state.menus = [];
@@ -154,9 +154,9 @@ export const userInfoSlice = createSlice({
       state.account = action.payload.account
       state.menus = action.payload.menus
       state.siders = getSiders(action.payload.menus)
-    }).addCase(login.pending,(state, action) => {
+    }).addCase(login.pending,(state) => {
       state.loginStatus = LoginStatus.Loading
-    }).addCase(login.rejected,(state, action) => {
+    }).addCase(login.rejected,(state) => {
       state.loginStatus = LoginStatus.Unlogin
       EventEmitter.emit(CustomizerEvent.UNLOGIN)
     })
@@ -170,7 +170,16 @@ export const login = createAsyncThunk('userInfo/login', async () => {
    * 1.每次进入页面，先调用获取用户信息接口
    */
   const res = await getUserInfo();
-  return res
+  if(res && res.code) {
+    return res.data;
+  }
+  else {
+    return {
+      name: '',
+      account: '',
+      menus: []
+    }
+  }
 })
 
 export const { setUserInfo, setLoginStatus, logout } = userInfoSlice.actions

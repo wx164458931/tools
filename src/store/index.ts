@@ -21,7 +21,7 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
 
 const clearUserInfo = () => {
   setTimeout(() => {
-    store.dispatch(logout({}))
+    store.dispatch(logout())
   });
 }
 

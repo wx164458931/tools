@@ -21,6 +21,7 @@ import CustomizerEvent from './customizerEvent'
  */
 export interface RequestMethod {
   <T = any>(url: string, options?: AxiosRequestConfig): Promise<T>;
+  <T = any>(options?: AxiosRequestConfig): Promise<T>;
   get: RequestMethod;
   post: RequestMethod;
   delete: RequestMethod;
