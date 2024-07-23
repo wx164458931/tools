@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
-import request, { /** RequestMethod */ } from '../common/axiosRequest';
+import { createRequest, ICustomeizedAxiosRequestConfig } from '../common/axiosRequest';
 
 /**
  * 定义一个获取当前Mock返回结果类型的类型工具
@@ -32,7 +32,9 @@ export const createMockGetor = <T extends Record<string, any> = object>(mockMap:
  * @param mockMap 
  * @returns 
  */
-export const createMockRequest = <T extends Record<string, any> = object>(mock: boolean, mockMap: T) => {
+export const createMockRequest = <T extends Record<string, any> = object>(mock: boolean, mockMap: T, config?: ICustomeizedAxiosRequestConfig) => {
+  const request = createRequest(config || {});
+  
   if(mock) {
     const mockGetor = createMockGetor(mockMap);
 

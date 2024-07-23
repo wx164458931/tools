@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios, { AxiosRequestConfig }from 'axios'
+import axios, { AxiosInstance, AxiosRequestConfig }from 'axios'
 import EventEmitter from './eventEmitter'
 import CustomizerEvent from './customizerEvent'
 /**
@@ -12,6 +12,10 @@ import CustomizerEvent from './customizerEvent'
  * 现在有两种方案.
  */
 
+export interface ICustomeizedAxiosRequestConfig extends AxiosRequestConfig {
+  prefix?: string
+  [key: string]: any
+}
 
 /**
  * 方案一
@@ -20,8 +24,8 @@ import CustomizerEvent from './customizerEvent'
  * 同时必须配合response的interceptors中，只将response的data返回，才能满足我们的需求。
  */
 export interface RequestMethod {
-  <T = any>(url: string, options?: AxiosRequestConfig): Promise<T>;
-  <T = any>(options?: AxiosRequestConfig): Promise<T>;
+  <T = any>(url: string, options?: ICustomeizedAxiosRequestConfig): Promise<T>;
+  <T = any>(options?: ICustomeizedAxiosRequestConfig): Promise<T>;
   get: RequestMethod;
   post: RequestMethod;
   delete: RequestMethod;
@@ -41,16 +45,16 @@ export interface RequestMethod {
  */
 declare module 'axios' {
   export interface AxiosInstance {
-    <T = any>(url: string, options?: AxiosRequestConfig): Promise<T>;
-    <T = any>(options?: AxiosRequestConfig): Promise<T>;
-    get<T = any>(url: string, options?: AxiosRequestConfig): Promise<T>;
-    post<T = any>(url: string, options?: AxiosRequestConfig): Promise<T>;
-    delete<T = any>(url: string, options?: AxiosRequestConfig): Promise<T>;
-    put<T = any>(url: string, options?: AxiosRequestConfig): Promise<T>;
-    patch<T = any>(url: string, options?: AxiosRequestConfig): Promise<T>;
-    head<T = any>(url: string, options?: AxiosRequestConfig): Promise<T>;
-    options<T = any>(url: string, options?: AxiosRequestConfig): Promise<T>;
-    rpc<T = any>(url: string, options?: AxiosRequestConfig): Promise<T>;
+    <T = any>(url: string, options?: ICustomeizedAxiosRequestConfig): Promise<T>;
+    <T = any>(options?: ICustomeizedAxiosRequestConfig): Promise<T>;
+    get<T = any>(url: string, options?: ICustomeizedAxiosRequestConfig): Promise<T>;
+    post<T = any>(url: string, options?: ICustomeizedAxiosRequestConfig): Promise<T>;
+    delete<T = any>(url: string, options?: ICustomeizedAxiosRequestConfig): Promise<T>;
+    put<T = any>(url: string, options?: ICustomeizedAxiosRequestConfig): Promise<T>;
+    patch<T = any>(url: string, options?: ICustomeizedAxiosRequestConfig): Promise<T>;
+    head<T = any>(url: string, options?: ICustomeizedAxiosRequestConfig): Promise<T>;
+    options<T = any>(url: string, options?: ICustomeizedAxiosRequestConfig): Promise<T>;
+    rpc<T = any>(url: string, options?: ICustomeizedAxiosRequestConfig): Promise<T>;
   }
 }
 
@@ -96,6 +100,97 @@ service.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+/**
+ * 这是一个请求构造器
+ * 作用是创建一个axios请求实例，这个实例带有一些公共的config
+ * 例如系统需要对接多个微服务后端，每个微服务后端的请求前缀不同
+ * 可以针对不同的微服务调用改方法创建带有不同前缀的请求实例
+ * @param config 公共请求配置
+ * @returns 
+ */
+export function createRequest(config: Partial<ICustomeizedAxiosRequestConfig>) {
+  /**
+   * 实际的请求构造器
+   * @param req 实际发送请求的方法 这个地方没想到合适的类型标注，先用any
+   * @param args1 请求的url或者让配置
+   * @param args2 请求配置
+   * @returns 
+   */
+  const _request = function(req: any, args1:string | ICustomeizedAxiosRequestConfig, args2?: ICustomeizedAxiosRequestConfig) {
+    const isUrl = (v: string | ICustomeizedAxiosRequestConfig): v is string => {
+      return typeof v === 'string';
+    }
+
+    /**
+     * 提取公共配置
+     */
+    let opt = {
+      ...config
+    }
+
+    /**
+     * 将请求独立配置合并入公共配置得到最终配置
+     * 优先级以独立配置优先
+     */
+    if(isUrl(args1)) {
+      /**
+       * 如果第一个参数是url
+       * 那将第二个参数合并入最终配置
+       */
+      opt = {
+        ...opt,
+        ...(args2 || {})
+      }
+
+      return req(args1, opt);
+    }
+    else {
+      /**
+       * 如果第一个参数数配置
+       * 将第一个参数合并入最终配置
+       */
+      opt = {
+        ...opt,
+        ...(args1 || {})
+      }
+
+      return req(opt);
+    }
+  }
+
+  /**
+   * 包装层的请求构造器
+   * 主要是传入不同的请求方法
+   * @param req 这个地方没想到合适的类型标注，先用any
+   * @returns 
+   */
+  const reqCreator = function(req: any) {
+    return function(args1:string | ICustomeizedAxiosRequestConfig, args2?: ICustomeizedAxiosRequestConfig) {
+      return _request(req, args1, args2);
+    }
+  }
+
+  /**
+   * 创建整体请求
+   */
+  // const req = reqCreator(service) as unknown as RequestMethod; // 方案1
+  const req = reqCreator(service) as unknown as AxiosInstance; // 方案2
+  /**
+   * 创建各个独立请求
+   */
+  req.get =  reqCreator(service.get);
+  req.post =  reqCreator(service.post);
+  req.delete =  reqCreator(service.delete);
+  req.put =  reqCreator(service.put);
+  req.patch =  reqCreator(service.patch);
+  req.head =  reqCreator(service.head);
+  req.options =  reqCreator(service.options);
+  req.rpc =  reqCreator(service.rpc);
+
+  // return req as unknown as RequestMethod; // 方案1
+  return req as unknown as AxiosInstance; // 方案2
+}
 
 // export default service as any as RequestMethod // 对应方案1
 

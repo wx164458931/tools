@@ -170,7 +170,7 @@ export const login = createAsyncThunk('userInfo/login', async () => {
    * 1.每次进入页面，先调用获取用户信息接口
    */
   const res = await getUserInfo();
-  if(res && res.code) {
+  if(res && res.success) {
     return res.data;
   }
   else {
